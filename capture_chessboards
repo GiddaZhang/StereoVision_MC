@@ -21,14 +21,13 @@ Take pictures of a chessboard visible to both cameras in a stereo pair.
 """
 
 from argparse import ArgumentParser
-import os
-
-import cv2
 from progressbar import ProgressBar, Bar, Percentage
 from stereovision.stereo_cameras import ChessboardFinder
 from stereovision.ui_utils import calibrate_folder, CHESSBOARD_ARGUMENTS
 from stereovision.ui_utils import find_files
 import time
+import os
+import cv2
 
 PROGRAM_DESCRIPTION=(
 "Take a number of pictures with a stereo camera in which a chessboard is "

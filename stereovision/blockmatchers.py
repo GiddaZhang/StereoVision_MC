@@ -113,8 +113,9 @@ class StereoBM(BlockMatcher):
     """A stereo block matching ``BlockMatcher``."""
 
     parameter_maxima = {"search_range": None,
-                       "window_size": 255,
-                       "stereo_bm_preset": cv2.STEREO_BM_NARROW_PRESET}
+                       "window_size": 255
+                    #    "stereo_bm_preset": cv2.STEREO_BM_NARROW_PRESET
+                       }
 
     @property
     def search_range(self):
@@ -158,8 +159,9 @@ class StereoBM(BlockMatcher):
     def stereo_bm_preset(self, value):
         """Set private ``_stereo_bm_preset`` and reset ``_block_matcher``."""
         if value in (cv2.STEREO_BM_BASIC_PRESET,
-                     cv2.STEREO_BM_FISH_EYE_PRESET,
-                     cv2.STEREO_BM_NARROW_PRESET):
+                     cv2.STEREO_BM_FISH_EYE_PRESET
+                    #  cv2.STEREO_BM_NARROW_PRESET
+                     ):
             self._bm_preset = value
         else:
             raise InvalidBMPresetError("Stereo BM preset must be defined as "

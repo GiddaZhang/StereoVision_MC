@@ -133,9 +133,9 @@ def enforce_delay(pair, delay):
         text_size = cv2.getTextSize(time_remaining, font, font_scale, line_thickness)[0]
 
         # Calculates the position of the text
+        ### Gidda: text_x & text_y must be integer
         text_x = (int)((frames[0].shape[1] - text_size[0]) / 2)
         text_y = (int)((frames[0].shape[0] + text_size[1]) / 2)
-        ### Gidda: text_x & text_y must be integer
 
         for frame, window in zip(frames, pair.windows):
             cv2.putText(frame, time_remaining, (text_x, text_y), font, font_scale, (255, 50, 50),

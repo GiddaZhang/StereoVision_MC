@@ -24,3 +24,4 @@ Original Author: `Daniel Lee <Lee.Daniel.1986@gmail.com>`_
 - Producing point clouds (https://erget.wordpress.com/2014/04/27/producing-3d-point-clouds-with-a-stereo-camera-in-opencv)
 - opencv教程 (http://web.archive.org/web/20190203045746/https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_calib3d/py_depthmap/py_depthmap.html)
 - opencv官网 (https://opencv.org/releases/page/7/)
+- 支持opencv3的库？ (https://github.com/sdlouhy/StereoVision)

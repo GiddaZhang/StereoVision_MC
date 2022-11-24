@@ -1,10 +1,14 @@
-import os
-import time
 import cv2
+
 from stereovision.stereo_cameras import StereoPair
 from stereovision_new.blockmatchers import StereoBM, StereoSGBM
 from stereovision_new.calibration import StereoCalibration
 from stereovision_new.ui_utils import find_files, BMTuner, STEREO_BM_FLAG
+
+# 鼠标召回事件，打印点击处深度值
+def onMouse(event, x, y, flags, param):
+    if event == cv2.EVENT_FLAG_LBUTTON:
+        print(param[y-1][x-1])
 
 def main():
     # 修改此处指定摄像头序号
@@ -18,15 +22,23 @@ def main():
 
     with StereoPair(devices=(left_cam, right_cam)) as pair:
         
+        focal_len = pair.get_focal_length('calibrate/1/cam_mats_left.npy', 
+                                          'calibrate/1/cam_mats_right.npy')
+        base_len = 57       # 57mm基线
+
         while True:
+
             image_pair = pair.get_frames()
             rectified_pair = calibration.rectify(image_pair)
-
             disparity = block_matcher.get_disparity(rectified_pair)
+
+            depth_map = base_len * focal_len / disparity
             norm_coeff = 255 / disparity.max()
 
             cv2.imshow('disparity', disparity * norm_coeff / 255)
-            cv2.imshow('image', image_pair[1])
+            cv2.setMouseCallback('disparity', onMouse, depth_map)
+            # cv2.imshow('image', image_pair[1])
+            cv2.imshow('image', rectified_pair[0])
             cv2.waitKey(1)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):

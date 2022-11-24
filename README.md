@@ -1,5 +1,9 @@
 Original Author: `Daniel Lee <Lee.Daniel.1986@gmail.com>`_
 
+## TODO
+- 坐标系变换
+- 物体识别
+
 ## Bug list
 
 - 在`capture_chessboards`文件中的 `enforce_delay` 函数, `text_x` 和 `text_y` 必须是整数，修改为

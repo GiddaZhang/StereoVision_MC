@@ -30,7 +30,7 @@ Classes:
 """
 
 import cv2
-
+import numpy as np
 from stereovision.point_cloud import PointCloud
 
 
@@ -86,6 +86,15 @@ class StereoPair(object):
         left_frame = frame[:, :int(width / 2), :]
         right_frame = frame[:, int(width / 2):, :]
         return [left_frame, right_frame]
+
+    def get_focal_length(self, path_1, path_2):
+        """
+        Get the focal length of current left and right cameras.
+        """
+        cam_mat_left = np.load(path_1)
+        cam_mat_right = np.load(path_2)
+        focal_lenth = (cam_mat_left[0][0] + cam_mat_right[0][0]) / 2
+        return focal_lenth
 
     def show_frames(self, wait=0):
         """

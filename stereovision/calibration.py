@@ -208,6 +208,10 @@ class StereoCalibrator(object):
         side = "left"
         self.object_points.append(self.corner_coordinates)
         for image in image_pair:
+            # print(self.image_count)
+            # if self.image_count == 43:
+            #     cv2.imshow(image)
+            
             corners = self._get_corners(image)
             if show_results:
                 self._show_corners(image, corners)

@@ -16,12 +16,6 @@ def main():
     calibration = StereoCalibration(input_folder=calibration_folder)
     block_matcher = StereoSGBM()
 
-    ### read from file
-    # image_folder = 'test_img/7/'
-    # input_files = find_files(image_folder)
-    # image_pair = [cv2.imread(image) for image in input_files[:2]]
-    # input_files = input_files[2:]
-
     with StereoPair(devices=(left_cam, right_cam)) as pair:
         
         while True:

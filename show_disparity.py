@@ -12,7 +12,7 @@ def main():
     right_cam = 2
 
     # 标定参数，修改此处指定路径
-    calibration_folder = 'calibrate_output/5/'
+    calibration_folder = 'calibrate/1/'
     calibration = StereoCalibration(input_folder=calibration_folder)
     block_matcher = StereoSGBM()
 

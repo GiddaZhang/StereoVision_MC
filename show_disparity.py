@@ -8,11 +8,11 @@ from stereovision_new.ui_utils import find_files, BMTuner, STEREO_BM_FLAG
 
 def main():
     # 修改此处指定摄像头序号
-    left_cam = 2
-    right_cam = 1
+    left_cam = 1
+    right_cam = 2
 
     # 标定参数，修改此处指定路径
-    calibration_folder = 'calibrate_output/4/'
+    calibration_folder = 'calibrate_output/5/'
     calibration = StereoCalibration(input_folder=calibration_folder)
     block_matcher = StereoSGBM()
 

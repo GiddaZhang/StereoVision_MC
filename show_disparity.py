@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 
 from stereovision.stereo_cameras import StereoPair
 from stereovision_new.blockmatchers import StereoBM, StereoSGBM
@@ -44,7 +43,7 @@ def main():
         base_len = 57       # 57mm基线
 
         while True:
-            
+
             show_disparity(pair, calibration, block_matcher, base_len, focal_len)
 
 if __name__ == "__main__":

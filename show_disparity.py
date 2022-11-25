@@ -1,14 +1,31 @@
 import cv2
+import numpy as np
 
 from stereovision.stereo_cameras import StereoPair
 from stereovision_new.blockmatchers import StereoBM, StereoSGBM
 from stereovision_new.calibration import StereoCalibration
 from stereovision_new.ui_utils import find_files, BMTuner, STEREO_BM_FLAG
 
-# 鼠标召回事件，打印点击处深度值
-def onMouse(event, x, y, flags, param):
-    if event == cv2.EVENT_FLAG_LBUTTON:
-        print(param[y-1][x-1])
+def show_disparity(pair, calibration, block_matcher, base_len, focal_len):
+
+    # 鼠标召回事件，打印点击处深度值
+    def onMouse(event, x, y, flags, param):
+        if event == cv2.EVENT_FLAG_LBUTTON:
+            print('depth: {}mm'.format(param[y-1][x-1]))
+
+    image_pair = pair.get_frames()
+    rectified_pair = calibration.rectify(image_pair)
+    disparity = block_matcher.get_disparity(rectified_pair)
+
+    depth_map = base_len * focal_len / disparity
+    disparity_norm = disparity / disparity.max()
+
+    cv2.imshow('Left camera', rectified_pair[0])
+    cv2.imshow('Right camera', rectified_pair[1])
+    cv2.waitKey(1)
+    cv2.imshow('disparity', disparity_norm)
+    cv2.waitKey(1)
+    cv2.setMouseCallback('disparity', onMouse, depth_map)
 
 def main():
     # 修改此处指定摄像头序号
@@ -27,22 +44,8 @@ def main():
         base_len = 57       # 57mm基线
 
         while True:
-
-            image_pair = pair.get_frames()
-            rectified_pair = calibration.rectify(image_pair)
-            disparity = block_matcher.get_disparity(rectified_pair)
-
-            depth_map = base_len * focal_len / disparity
-            norm_coeff = 255 / disparity.max()
-
-            cv2.imshow('disparity', disparity * norm_coeff / 255)
-            cv2.setMouseCallback('disparity', onMouse, depth_map)
-            # cv2.imshow('image', image_pair[1])
-            cv2.imshow('image', rectified_pair[0])
-            cv2.waitKey(1)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            
+            show_disparity(pair, calibration, block_matcher, base_len, focal_len)
 
 if __name__ == "__main__":
     main()

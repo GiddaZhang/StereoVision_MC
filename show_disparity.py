@@ -8,6 +8,7 @@ from stereovision_new.ui_utils import find_files, BMTuner, STEREO_BM_FLAG
 def show_disparity(pair, calibration, block_matcher, base_len, focal_len):
 
     # 鼠标召回事件，打印点击处深度值
+    #  1
     def onMouse(event, x, y, flags, param):
         if event == cv2.EVENT_FLAG_LBUTTON:
             print('depth: {}mm'.format(param[y-1][x-1]))

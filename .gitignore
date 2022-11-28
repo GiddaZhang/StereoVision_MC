@@ -1,3 +1,4 @@
 StereoVision.egg-info/
 external/
+*.weights
 *.pyc

@@ -1,27 +1,30 @@
 import cv2
 
+from YOLO.yolo import yolo
 from stereovision.stereo_cameras import StereoPair
 from stereovision_new.blockmatchers import StereoBM, StereoSGBM
 from stereovision_new.calibration import StereoCalibration
 from stereovision_new.ui_utils import find_files, BMTuner, STEREO_BM_FLAG
 
-def show_disparity(pair, calibration, block_matcher, base_len, focal_len):
+def show_disparity(pair, calibration, block_matcher, base_len, focal_len, detector):
 
     # 鼠标召回事件，打印点击处深度值
-    #  1
     def onMouse(event, x, y, flags, param):
         if event == cv2.EVENT_FLAG_LBUTTON:
             print('depth: {}mm'.format(param[y-1][x-1]))
 
     image_pair = pair.get_frames()
     rectified_pair = calibration.rectify(image_pair)
+    left_eye = rectified_pair[0]
     disparity = block_matcher.get_disparity(rectified_pair)
 
     depth_map = base_len * focal_len / disparity
     disparity_norm = disparity / disparity.max()
 
-    cv2.imshow('Left camera', rectified_pair[0])
-    cv2.imshow('Right camera', rectified_pair[1])
+    img = detector.predict(left_eye)
+    cv2.imshow('1', img)
+    # cv2.imshow('Left camera', rectified_pair[0])
+    # cv2.imshow('Right camera', rectified_pair[1])
     cv2.waitKey(1)
     cv2.imshow('disparity', disparity_norm)
     cv2.waitKey(1)
@@ -37,6 +40,12 @@ def main():
     calibration = StereoCalibration(input_folder=calibration_folder)
     block_matcher = StereoSGBM()
 
+    # 初始化检测器
+    classes = 'YOLO\yolov3.txt'
+    weights = 'YOLO\yolov3.weights'
+    config = 'YOLO\yolov3.cfg'
+    Yolo = yolo(classes, weights, config)
+
     with StereoPair(devices=(left_cam, right_cam)) as pair:
         
         focal_len = pair.get_focal_length('calibrate/1/cam_mats_left.npy', 
@@ -45,7 +54,7 @@ def main():
 
         while True:
 
-            show_disparity(pair, calibration, block_matcher, base_len, focal_len)
+            show_disparity(pair, calibration, block_matcher, base_len, focal_len, Yolo)
 
 if __name__ == "__main__":
     main()

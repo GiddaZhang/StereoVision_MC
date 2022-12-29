@@ -2,9 +2,9 @@ import cv2
 
 from YOLO.yolo import yolo
 from stereovision.stereo_cameras import StereoPair
-from stereovision_new.blockmatchers import StereoBM, StereoSGBM
-from stereovision_new.calibration import StereoCalibration
-from stereovision_new.ui_utils import find_files, BMTuner, STEREO_BM_FLAG
+from stereovision.blockmatchers import StereoBM, StereoSGBM
+from stereovision.calibration import StereoCalibration
+from stereovision.ui_utils import find_files, BMTuner, STEREO_BM_FLAG
 
 def show_disparity(pair, calibration, block_matcher, base_len, focal_len, detector):
 

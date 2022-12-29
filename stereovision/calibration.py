@@ -62,7 +62,7 @@ class StereoCalibration(object):
         ``action`` is a string. It determines whether the method reads or writes
         to disk. It must have one of the following values: ('r', 'w').
         """
-        if not action in ('r', 'w'):
+        if action not in ('r', 'w'):
             raise ValueError("action must be either 'r' or 'w'.")
         for key, item in self.__dict__.items():
             if isinstance(item, dict):
@@ -72,13 +72,13 @@ class StereoCalibration(object):
                     if action == 'w':
                         np.save(filename, self.__dict__[key][side])
                     else:
-                        self.__dict__[key][side] = np.load(filename)
+                        self.__dict__[key][side] = np.load(filename, encoding='latin1')
             else:
                 filename = os.path.join(output_folder, "{}.npy".format(key))
                 if action == 'w':
                     np.save(filename, self.__dict__[key])
                 else:
-                    self.__dict__[key] = np.load(filename)
+                    self.__dict__[key] = np.load(filename, encoding='latin1')
 
     def __init__(self, calibration=None, input_folder=None):
         """
@@ -208,10 +208,6 @@ class StereoCalibrator(object):
         side = "left"
         self.object_points.append(self.corner_coordinates)
         for image in image_pair:
-            # print(self.image_count)
-            # if self.image_count == 43:
-            #     cv2.imshow(image)
-            
             corners = self._get_corners(image)
             if show_results:
                 self._show_corners(image, corners)
@@ -226,20 +222,17 @@ class StereoCalibrator(object):
         flags = (cv2.CALIB_FIX_ASPECT_RATIO + cv2.CALIB_ZERO_TANGENT_DIST +
                  cv2.CALIB_SAME_FOCAL_LENGTH)
         calib = StereoCalibration()
-        # print(self.image_size)
         (calib.cam_mats["left"], calib.dist_coefs["left"],
          calib.cam_mats["right"], calib.dist_coefs["right"],
          calib.rot_mat, calib.trans_vec, calib.e_mat,
          calib.f_mat) = cv2.stereoCalibrate(self.object_points,
                                             self.image_points["left"],
                                             self.image_points["right"],
-                                            # self.image_size,
+                                            self.image_size,
                                             calib.cam_mats["left"],
                                             calib.dist_coefs["left"],
                                             calib.cam_mats["right"],
                                             calib.dist_coefs["right"],
-                                            # Gidda: the position of the parameter was changed due to the version of Opencv
-                                            self.image_size,
                                             calib.rot_mat,
                                             calib.trans_vec,
                                             calib.e_mat,
@@ -250,13 +243,13 @@ class StereoCalibrator(object):
          calib.proj_mats["left"], calib.proj_mats["right"],
          calib.disp_to_depth_mat, calib.valid_boxes["left"],
          calib.valid_boxes["right"]) = cv2.stereoRectify(calib.cam_mats["left"],
-                                                      calib.dist_coefs["left"],
-                                                      calib.cam_mats["right"],
-                                                      calib.dist_coefs["right"],
-                                                      self.image_size,
-                                                      calib.rot_mat,
-                                                      calib.trans_vec,
-                                                      flags=0)
+                                                         calib.dist_coefs["left"],
+                                                         calib.cam_mats["right"],
+                                                         calib.dist_coefs["right"],
+                                                         self.image_size,
+                                                         calib.rot_mat,
+                                                         calib.trans_vec,
+                                                         flags=0)
         for side in ("left", "right"):
             (calib.undistortion_map[side],
              calib.rectification_map[side]) = cv2.initUndistortRectifyMap(
@@ -296,8 +289,8 @@ class StereoCalibrator(object):
                          calibration.dist_coefs[side],
                          P=calibration.cam_mats[side])
             lines[side] = cv2.computeCorrespondEpilines(undistorted[side],
-                                              which_image[side],
-                                              calibration.f_mat)
+                                                        which_image[side],
+                                                        calibration.f_mat)
         total_error = 0
         this_side, other_side = sides
         for side in sides:

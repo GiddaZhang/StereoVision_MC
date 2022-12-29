@@ -20,80 +20,53 @@
 Take pictures of a chessboard visible to both cameras in a stereo pair.
 """
 
-from argparse import ArgumentParser
 from progressbar import ProgressBar, Bar, Percentage
 from stereovision.stereo_cameras import ChessboardFinder
-from stereovision.ui_utils import calibrate_folder, CHESSBOARD_ARGUMENTS
-from stereovision.ui_utils import find_files
 import time
 import os
 import cv2
 
-PROGRAM_DESCRIPTION=(
-"Take a number of pictures with a stereo camera in which a chessboard is "
-"visible to both cameras. The program waits until a chessboard is detected in "
-"both camera frames. The pictures are then saved to a file in the specified "
-"output folder. After five seconds, the cameras are rescanned to find another "
-"chessboard perspective. This continues until the specified number of pictures "
-"has been taken."
-)
-
 
 def main():
-    parser = ArgumentParser(description=PROGRAM_DESCRIPTION,
-                           parents=[CHESSBOARD_ARGUMENTS])
-    parser.add_argument("left", metavar="left", type=int,
-                        help="Device numbers for the left camera.")
-    parser.add_argument("right", metavar="right", type=int,
-                        help="Device numbers for the right camera.")
-    parser.add_argument("num_pictures", type=int, help="Number of valid "
-                        "chessboard pictures that should be taken.")
-    parser.add_argument("output_folder", help="Folder to save the images to.")
-    parser.add_argument("--calibration-folder", help="Folder to save camera "
-                        "calibration to.")
-    args = parser.parse_args()
-    if args.calibration_folder and not args.square_size:
-        args.print_help()
+    lcam, rcam = 1, 2
+    num_pictures = 1
+    output_folder = 'chessboards/2'
+    rows, columns = 9, 6
 
-    progress = ProgressBar(maxval=args.num_pictures,
-                          widgets=[Bar("=", "[", "]"),
-                          " ", Percentage()])
-    if not os.path.exists(args.output_folder):
-        os.makedirs(args.output_folder)
+    progress = ProgressBar(maxval=num_pictures,
+                           widgets=[Bar("=", "[", "]"),
+                                    " ", Percentage()])
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
     progress.start()
-    with ChessboardFinder((args.left, args.right)) as pair:
+    
+    with ChessboardFinder((lcam, rcam)) as pair:
 
         # Sets initial position of windows, based on image size
         set_window_position(pair)
 
-        for i in range(args.num_pictures):
+        for i in range(num_pictures):
 
             # Introduces a 5 second delay before the camera pair is scanned for new images
             enforce_delay(pair, 5)
 
-            frames, corners = pair.get_chessboard(args.columns, args.rows, True)
+            frames, corners = pair.get_chessboard(columns, rows, True)
             for side, frame in zip(("left", "right"), frames):
-                number_string = str(i + 1).zfill(len(str(args.num_pictures)))
+                number_string = str(i + 1).zfill(len(str(num_pictures)))
                 filename = "{}_{}.ppm".format(side, number_string)
-                output_path = os.path.join(args.output_folder, filename)
+                output_path = os.path.join(output_folder, filename)
                 cv2.imwrite(output_path, frame)
 
-            progress.update(progress.maxval - (args.num_pictures - i))
+            progress.update(progress.maxval - (num_pictures - i))
 
             # Displays the recent accepted image pair. Helps in generating diverse calibration images.
-            show_selected_frames(frames, corners, pair, args, True)
+            show_selected_frames(frames, corners, pair, columns, rows, True)
 
         progress.finish()
         cv2.destroyAllWindows()
 
-    if args.calibration_folder:
-        args.input_files = find_files(args.output_folder)
-        args.output_folder = args.calibration_folder
-        args.show_chessboards = True
-        calibrate_folder(args)
 
-
-def show_selected_frames(frames, corners, pair, args, draw_corners=False):
+def show_selected_frames(frames, corners, pair, columns, rows, draw_corners=False):
     """
     Display the most recently captured (left as well as right) images.
     If draw_corners is set to true, the identified corners are marked on the images.
@@ -101,7 +74,7 @@ def show_selected_frames(frames, corners, pair, args, draw_corners=False):
 
     if draw_corners:
         for frame, corner in zip(frames, corners):
-            cv2.drawChessboardCorners(frame, (args.columns, args.rows), corner, True)
+            cv2.drawChessboardCorners(frame, (columns, rows), corner, True)
 
     cv2.imshow("{} selected".format(pair.windows[0]), frames[0])
     cv2.imshow("{} selected".format(pair.windows[1]), frames[1])

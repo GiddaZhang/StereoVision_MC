@@ -1,7 +1,6 @@
 import cv2
 
 from YOLO.yolo import yolo
-from cascade.detector import cascade_detector
 from stereovision.stereo_cameras import StereoPair
 from stereovision_new.blockmatchers import StereoBM, StereoSGBM
 from stereovision_new.calibration import StereoCalibration
@@ -22,7 +21,8 @@ def show_disparity(pair, calibration, block_matcher, base_len, focal_len, detect
     depth_map = base_len * focal_len / disparity
     disparity_norm = disparity / disparity.max()
 
-    img = detector.predict(left_eye)
+    # img = detector.predict(left_eye)
+    img = left_eye
     cv2.imshow('1', img)
     # cv2.imshow('Left camera', rectified_pair[0])
     # cv2.imshow('Right camera', rectified_pair[1])
@@ -45,9 +45,6 @@ def main():
     Yolo = yolo('YOLO\yolov3.txt',
                 'YOLO\yolov3.weights',
                 'YOLO\yolov3.cfg')
-
-    # 初始化检测器2
-    cascade = cascade_detector('cascade/haarcascade_frontalcatface_extended.xml')
 
     with StereoPair(devices=(left_cam, right_cam)) as pair:
         

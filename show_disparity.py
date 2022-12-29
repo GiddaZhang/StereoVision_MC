@@ -59,8 +59,7 @@ def main():
                         block_matcher, 
                         base_len, 
                         focal_len,
-                        Yolo 
-                        # cascade
+                        Yolo
                         )
 
 if __name__ == "__main__":

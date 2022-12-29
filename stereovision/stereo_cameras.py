@@ -75,6 +75,8 @@ class StereoPair(object):
 
     def get_frames(self):
         """Get current frames from cameras."""
+        # ret, frame = capture.read()
+        # ret is a bool value representing the success of reading process
         return [capture.read()[1] for capture in self.captures]
 
     def get_frames_singleimage(self):
@@ -110,7 +112,7 @@ class StereoPair(object):
     def show_videos(self):
         """Show video from cameras."""
         while True:
-            self.show_frames(1)
+            self.show_frames(wait=1)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 

@@ -18,7 +18,9 @@
 
 
 from stereovision.stereo_cameras import StereoPair
-
+import os
+import time
+import cv2
 
 def main():
     """
@@ -28,8 +30,27 @@ def main():
     # 修改此处指定摄像头序号
     lcam = 1
     rcam = 2
+    capture_pic = True
+
     with StereoPair(devices=(lcam, rcam)) as pair:
-        pair.show_videos()
+
+        if not capture_pic:
+            pair.show_videos()
+
+        else:
+            interval = 10       # 时间间隔
+            output_folder = 'pics'
+            i = 1
+            while True:
+                start = time.time()
+                while time.time() < start + interval:
+                    pair.show_frames(1)
+                images = pair.get_frames()
+                for side, image in zip(("left", "right"), images):
+                    filename = "{}_{}.png".format(side, i)
+                    output_path = os.path.join(output_folder, filename)
+                    cv2.imwrite(output_path, image)
+                i += 1
 
 if __name__ == "__main__":
     main()

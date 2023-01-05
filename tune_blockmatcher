@@ -61,13 +61,15 @@ def main():
     image_pair = [cv2.imread(image) for image in input_files[:2]]
     input_files = input_files[2:]
     rectified_pair = calibration.rectify(image_pair)
+    # cv2.imwrite('l.png', rectified_pair[0])
+    # cv2.imwrite('r.png', rectified_pair[1])
     tuner = BMTuner(block_matcher, calibration, rectified_pair)
 
-    while input_files:
-        image_pair = [cv2.imread(image) for image in input_files[:2]]
-        rectified_pair = calibration.rectify(image_pair)
-        tuner.tune_pair(rectified_pair)
-        input_files = input_files[2:]
+    # while input_files:
+    #     image_pair = [cv2.imread(image) for image in input_files[:2]]
+    #     rectified_pair = calibration.rectify(image_pair)
+    #     tuner.tune_pair(rectified_pair)
+    #     input_files = input_files[2:]
 
     for param in block_matcher.parameter_maxima:
         print("{}\n".format(tuner.report_settings(param)))

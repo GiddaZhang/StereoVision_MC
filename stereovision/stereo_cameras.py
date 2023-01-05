@@ -96,7 +96,7 @@ class StereoPair(object):
         """
         cam_mat_left = np.load(path_1)
         cam_mat_right = np.load(path_2)
-        focal_lenth = (cam_mat_left[0][0] + cam_mat_right[0][0]) / 2
+        focal_lenth = (cam_mat_left[0][0] + cam_mat_left[1][1] + cam_mat_right[0][0] + cam_mat_right[1][1]) / 4
         return focal_lenth
 
     def show_frames(self, wait=0):

@@ -92,7 +92,7 @@ def calibrate_folder(args):
     height, width = cv2.imread(args.input_files[0]).shape[:2]
     calibrator = StereoCalibrator(args.rows, args.columns, args.square_size,
                                   (width, height))
-    progress = ProgressBar(max_value=len(args.input_files),
+    progress = ProgressBar(maxval=len(args.input_files),
                            widgets=[Bar("=", "[", "]"),
                            " ", Percentage()])
     print("Reading input files...")
@@ -129,7 +129,9 @@ class BMTuner(object):
     """
 
     #: Window to show results in
+
     window_name = "BM Tuner"
+    bar_name = "Bars"
 
     def _set_value(self, parameter, new_value):
         """Try setting new parameter on ``block_matcher`` and update map."""
@@ -147,10 +149,11 @@ class BMTuner(object):
             maximum = self.block_matcher.parameter_maxima[parameter]
             if not maximum:
                 maximum = self.shortest_dimension
-            cv2.createTrackbar(parameter, self.window_name,
+            cv2.createTrackbar(parameter, self.bar_name,
                                self.block_matcher.__getattribute__(parameter),
                                maximum,
-                               partial(self._set_value, parameter))
+                               partial(self._set_value, parameter)
+                               )
 
     def _save_bm_state(self):
         """Save current state of ``block_matcher``."""
@@ -178,6 +181,9 @@ class BMTuner(object):
         for parameter in self.block_matcher.parameter_maxima.keys():
             self.bm_settings[parameter] = []
         cv2.namedWindow(self.window_name)
+        cv2.namedWindow(self.bar_name)
+        cv2.resizeWindow(self.bar_name, 640, 480)
+        cv2.moveWindow(self.bar_name, 640, 0)
         self._initialize_trackbars()
         self.tune_pair(image_pair)
 
@@ -189,9 +195,15 @@ class BMTuner(object):
         255, because OpenCV multiplies it by 255 when displaying. This is
         because the pixels are stored as floating points.
         """
+        for parameter in self.block_matcher.parameter_maxima.keys():
+            print(parameter, self.block_matcher.__getattribute__(parameter))
+
         disparity = self.block_matcher.get_disparity(self.pair)
-        norm_coeff = 255 / disparity.max()
-        cv2.imshow(self.window_name, disparity * norm_coeff / 255)
+        disparity = cv2.normalize(disparity, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+        disparity = cv2.applyColorMap(disparity, 2)
+        cv2.imshow(self.window_name, disparity)
+        # norm_coeff = 255 / disparity.max()
+        # cv2.imshow(self.window_name, disparity * norm_coeff / 255)
         cv2.waitKey()
 
     def tune_pair(self, pair):

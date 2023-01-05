@@ -2,3 +2,7 @@ StereoVision.egg-info/
 external/
 *.weights
 *.pyc
+*.ppm
+*.npy
+*.tar
+*.png

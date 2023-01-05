@@ -29,8 +29,8 @@ import cv2
 
 def main():
     lcam, rcam = 1, 2
-    num_pictures = 1
-    output_folder = 'chessboards/2'
+    num_pictures = 50
+    output_folder = 'chessboards/3'
     rows, columns = 9, 6
 
     progress = ProgressBar(maxval=num_pictures,
